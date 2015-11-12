@@ -19,11 +19,34 @@ var StarsFrame = React.createClass({
 
 var ButtonFrame = React.createClass({
     render: function () {
-        var disabled;
-        disabled =(this.props.selectedNumbers.length===0);
+        var disabled, button, correct = this.props.correct;
+
+        switch (correct) {
+            case true:
+                button = (
+                    <button className="btn btn-success btn-lg" >
+                       <span className="glyphicon glyphicon-ok"></span>
+                    </button>
+                );
+                break;
+            case false:
+                button = (
+                    <button className="btn btn-danger btn-lg" >
+                        <span className="glyphicon glyphicon-remove"></span>
+                    </button>
+                );
+                break;
+            default:
+                disabled = (this.props.selectedNumbers.length === 0);
+                button = (
+                    <button className="btn btn-primary btn-lg" disabled={disabled} onClick={this.props.checkAnswer}>
+                        =
+                    </button>
+                );
+        }
         return (
-            <div id="button-frame" >
-                <button className="btn btn-primary btn-lg" disabled={disabled}>=</button>
+            <div id="button-frame">
+                {button}
             </div>
         )
     }
@@ -77,7 +100,9 @@ var Game = React.createClass({
     getInitialState: function() {
         return {
          numberOfStars: Math.floor(Math.random() * 9) + 1,
-        selectedNumbers:[]};
+        selectedNumbers:[],
+            correct: null };
+
     },
     selectNumber: function (clickedNumber) {
         if(this.state.selectedNumbers.indexOf(clickedNumber)<0) {
@@ -92,25 +117,36 @@ var Game = React.createClass({
         selectedNumbers.splice(indexOfNumber,   1);
         this.setState({selectedNumbers:selectedNumbers });
     },
+
+    sumOfSelectNumbers: function(){
+        return this.state.selectedNumbers.reduce(function(p,n){
+            return p+n;
+        },0)
+    },
+    checkAnswer: function(){
+        var correct =(this.state.numberOfStars=== this.sumOfSelectNumbers());
+        this.setState({ correct: correct});
+    },
+
     render: function () {
         var selectedNumbers = this.state.selectedNumbers,
-            numberOfStars = this.state.numberOfStars;
-
+            numberOfStars = this.state.numberOfStars,
+            correct =this.state.correct;
         return (
             <div id="game">
                 <h2>Play Nine</h2>
                 <hr />
                 <div className="clearfix">
                     <StarsFrame numberOfStars={numberOfStars} />
-                    <ButtonFrame selectedNumbers={selectedNumbers}  />
+                    <ButtonFrame selectedNumbers={selectedNumbers}
+                                 correct={correct}
+                                 checkAnswer={this.checkAnswer} />
                     <AnswerFrame selectedNumbers={selectedNumbers}
-                                 unselectNumber={this.unselectNumber}
-                    />
+                                 unselectNumber={this.unselectNumber} />
                 </div>
                 <NumbersFrame selectedNumbers={selectedNumbers}
                               selectNumber={this.selectNumber}
-                              unselectNumber={this.unselectNumber}
-                />
+                              unselectNumber={this.unselectNumber} />
             </div>
         )
     }
