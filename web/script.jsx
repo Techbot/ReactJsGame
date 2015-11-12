@@ -1,61 +1,94 @@
-var Form = React.createClass({
-    handleSubmit:function(e){
-        e.preventDefault();
-        var loginInput =React.findDOMNode(this.refs.login);
 
-        //Add the card here.
-        this.props.addCard(loginInput.value);
-        loginInput.value = '';
-    } ,
+
+var StarsFrame = React.createClass({
+
     render: function () {
+
+        var numberOfStars =Math.floor(Math.random()*9)+1;
+       var stars=[];
+
+        for(var i=0;i<numberOfStars;i++){
+
+            stars.push(
+
+                <span className="glyphicon glyphicon-star"></span>
+            );
+
+
+
+        }
+
         return (
-            <form onSubmit={this.handleSubmit}>
-                <input placeholder ="github login" ref="login"/>
-                <button>Add</button>
-                <hr/>
-            </form>
-        );
-    }
-});
-var Card = React.createClass({
-    getInitialState: function () {
-        return {}
-    },
-    componentDidMount:function(){
-        var component = this;
-        $.get("https://api.github.com/users/" + this.props.login,function(data){
-            component.setState(data);
-        })
-    } ,
-    render: function () {
-        return (
-            <div>
-               <img src={this.state.avatar_url} width="80" />
-               <h3>{this.state.name} </h3>
-                <hr/>
-            </div>
-        );
+            <div id="stars-frame">
+                <div className="well">
+
+                    {stars}
+
+
+                </div>
+             </div>
+        )
     }
 });
 
-var Main = React.createClass({
-    getInitialState: function () {
-        return {logins: []};
-    },
-    addCard:function(loginToAdd){
-        this.setState({logins: this.state.logins.concat(loginToAdd)});
-    },
+var ButtonFrame = React.createClass({
     render: function () {
-        var cards = this.state.logins.map(function(login){
-            return (<Card login={login} />);
-        });
         return (
-            <div>
-                <Form addCard={this.addCard}/>
-                {cards}
+            <div id="button-frame" >
+                <button className="btn btn-primary btn-lg">=</button>
             </div>
         )
     }
 });
 
-ReactDOM.render(<Main />,document.getElementById("root"));
+var AnswerFrame = React.createClass({
+    render: function () {
+        return (
+            <div id="answer-frame" >
+                <div className="well">
+                    ...
+                </div>
+            </div>
+        )
+    }
+});
+
+var NumbersFrame = React.createClass({
+    render: function () {
+
+      var numbers=[];
+        for(var i=1;i<=9;i++){
+            numbers.push(
+                <div className="number">{i}</div>
+            )
+        }
+        return (
+            <div id="numbers-frame" >
+                <div className="well">
+                    {numbers}
+                </div>
+            </div>
+        )
+    }
+});
+
+var Game = React.createClass({
+    render: function () {
+        return (
+            <div id="game">
+                <h2>Play Nine</h2>
+                <hr />
+                <div className="clearfix">
+                    <StarsFrame />
+                    <ButtonFrame />
+                    <AnswerFrame />
+                </div>
+                <NumbersFrame/>
+            </div>
+        )
+    }
+});
+
+ReactDOM.render(
+    <Game />,document.getElementById("container")
+);
